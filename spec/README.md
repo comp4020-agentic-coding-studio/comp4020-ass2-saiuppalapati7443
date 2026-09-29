@@ -16,6 +16,24 @@ build cannot: dated material stays inside the course period. The build already
 owns compilation, accessibility, internal links, content references, API
 generation and deck compilation.
 
+`course-promises.test.ts` checks the promises specific to this course's
+CLAUDE.md, against the built site:
+
+- every week 1-12 has exactly one lecture and one counter shift, no gaps and
+  no duplicates
+- lectures fall on a Tuesday and counter shifts on a Thursday, and nothing is
+  dated inside the mid-semester break
+- each lecture's `object` and `stage` match `src/data/weeks.ts`, and it
+  relates to its own week's counter shift
+- the four assessments' weights sum to exactly 100
+- the deposit-rules sentence reads identically on the home page, the week 1
+  lecture and the policies page, so the one rule is never contradicted
+- no page uses a word CLAUDE.md's voice section bans
+- at least one lecture has a `slides` link, and the deck page it points to
+  actually exists
+- the words this course has no business using ("violin", "love letters",
+  "escheat") appear nowhere
+
 ## Your spec tests (yours to write)
 
 Turning the week's published spec into tests is your work, not the template's.
