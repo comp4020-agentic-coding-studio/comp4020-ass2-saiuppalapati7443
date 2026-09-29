@@ -1,0 +1,208 @@
+---
+interface Moment {
+  text: string;
+  risky: boolean;
+  explain: string;
+}
+
+const moments: Moment[] = [
+  {
+    text: "Pick up the umbrella at home as the rain starts.",
+    risky: false,
+    explain: "Steady: you're holding it because you need it right now — nothing to leave behind yet.",
+  },
+  {
+    text: "Board the bus, fold it, sit down.",
+    risky: true,
+    explain:
+      "Transition: boarding is a threshold — your hands are busy with the step and the fare, not the umbrella.",
+  },
+  {
+    text: "Ride the bus, umbrella across your lap.",
+    risky: false,
+    explain: "Steady: nothing changes here; it's still doing its job across your lap.",
+  },
+  {
+    text: "Get off at campus; the rain has stopped.",
+    risky: true,
+    explain:
+      "Transition: you've left the bus and the reason to carry it in the same moment — the point it stops mattering is the point it's easiest to lose.",
+  },
+  {
+    text: "Walk into the lecture theatre.",
+    risky: true,
+    explain: "Transition: crossing into a building is exactly the kind of threshold that resets what you're tracking.",
+  },
+  {
+    text: "Sit through the lecture.",
+    risky: false,
+    explain: "Steady: nothing changes here; it stays wherever you put it down when you sat.",
+  },
+  {
+    text: "Get up at the break and walk to the café.",
+    risky: true,
+    explain: "Transition: getting up and moving to a new room is the first threshold since the lecture began.",
+  },
+  {
+    text: "Order a coffee and sit down at a table.",
+    risky: false,
+    explain: "Steady: sitting to order doesn't change what you're carrying, so nothing new gets left behind.",
+  },
+  {
+    text: "Pack up and walk to the library.",
+    risky: true,
+    explain: "Transition: leaving the café for the library is one more threshold — the umbrella has survived three already.",
+  },
+  {
+    text: "Study at a desk, then walk home in the evening.",
+    risky: false,
+    explain: "Steady: heading back out into the weather keeps the umbrella in play — you'll want it again if it's still raining.",
+  },
+];
+
+const riskyCount = moments.filter((m) => m.risky).length;
+---
+
+<div class="explorable" data-explorable="umbrella-retrace">
+  <p>
+    Retrace one day carrying the umbrella. Tap the moments where you think it could most
+    easily have been left behind, then reveal which moments were the actual transitions.
+  </p>
+  <dl class="ledger moment-list">
+    {
+      moments.map((moment, index) => (
+        <div class="ledger-row moment" data-risky={String(moment.risky)}>
+          <dt class="moment-text">
+            {index + 1}. {moment.text}
+          </dt>
+          <dd>
+            <button type="button" class="explorable-button moment-toggle" hidden aria-pressed="false">
+              Tap: could the umbrella be left here?
+            </button>
+            <p class="moment-explain">{moment.explain}</p>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+  <p>
+    <button type="button" class="explorable-button explorable-reveal" hidden>
+      Reveal the transitions
+    </button>
+  </p>
+  <p class="explorable-result" aria-live="polite"></p>
+  <p class="explorable-static-note">There are {riskyCount} transition moments in this diary.</p>
+</div>
+
+<script>
+  const container = document.querySelector<HTMLElement>('[data-explorable="umbrella-retrace"]');
+
+  if (container) {
+    const items = Array.from(container.querySelectorAll<HTMLDivElement>(".moment"));
+    const revealButton = container.querySelector<HTMLButtonElement>(".explorable-reveal");
+    const resultEl = container.querySelector<HTMLElement>(".explorable-result");
+    const staticNote = container.querySelector<HTMLElement>(".explorable-static-note");
+
+    if (revealButton && resultEl) {
+      items.forEach((item) => {
+        const toggle = item.querySelector<HTMLButtonElement>(".moment-toggle");
+        const explain = item.querySelector<HTMLElement>(".moment-explain");
+        if (!toggle || !explain) return;
+        toggle.hidden = false;
+        explain.hidden = true;
+        toggle.addEventListener("click", () => {
+          const pressed = toggle.getAttribute("aria-pressed") === "true";
+          toggle.setAttribute("aria-pressed", String(!pressed));
+        });
+      });
+
+      staticNote?.setAttribute("hidden", "");
+      revealButton.hidden = false;
+      revealButton.addEventListener("click", () => {
+        let caught = 0;
+        let missed = 0;
+        let falseAlarms = 0;
+        let riskyTotal = 0;
+
+        items.forEach((item) => {
+          const risky = item.dataset.risky === "true";
+          const toggle = item.querySelector<HTMLButtonElement>(".moment-toggle");
+          const explain = item.querySelector<HTMLElement>(".moment-explain");
+          if (!toggle || !explain) return;
+          const tapped = toggle.getAttribute("aria-pressed") === "true";
+          explain.hidden = false;
+          toggle.disabled = true;
+          if (risky) {
+            riskyTotal += 1;
+            if (tapped) {
+              caught += 1;
+              item.classList.add("is-correct");
+            } else {
+              missed += 1;
+              item.classList.add("is-missed");
+            }
+          } else if (tapped) {
+            falseAlarms += 1;
+            item.classList.add("is-false-alarm");
+          }
+        });
+
+        resultEl.textContent = `You caught ${caught} of ${riskyTotal} transition moments, missed ${missed}, and raised ${falseAlarms} false alarm${falseAlarms === 1 ? "" : "s"}.`;
+        revealButton.disabled = true;
+      });
+    }
+  }
+</script>
+
+<style>
+  .explorable {
+    margin-block: var(--at-spacing-xl);
+  }
+
+  .moment-explain {
+    margin-block-start: var(--at-spacing-xs);
+    color: var(--at-text-secondary);
+  }
+
+  .explorable-button {
+    font: inherit;
+    padding: var(--at-spacing-sm) var(--at-spacing-md);
+    border: 1px dashed var(--at-divider);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg-elevated);
+    color: var(--at-text);
+    cursor: pointer;
+  }
+
+  .explorable-button[aria-pressed="true"] {
+    border-style: solid;
+    border-color: var(--at-accent);
+    background: var(--at-bg-alt);
+    font-weight: 600;
+  }
+
+  .explorable-button:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+
+  .moment.is-correct .moment-explain,
+  .moment.is-missed .moment-explain,
+  .moment.is-false-alarm .moment-explain {
+    border-inline-start: 3px solid var(--at-divider);
+    padding-inline-start: var(--at-spacing-sm);
+  }
+
+  .moment.is-correct .moment-explain {
+    border-inline-start-color: var(--at-success, var(--at-accent));
+  }
+
+  .moment.is-missed .moment-explain,
+  .moment.is-false-alarm .moment-explain {
+    border-inline-start-color: var(--at-error, var(--at-text-muted));
+  }
+
+  .explorable-result:empty {
+    display: none;
+  }
+</style>

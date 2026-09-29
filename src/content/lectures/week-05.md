@@ -9,6 +9,7 @@ teachers:
   - winsome-adebayo
 object: Suitcase
 stage: Storing
+explorable: shelf-retrieval
 related:
   - sessions/05-suitcase
 ---
@@ -50,4 +51,6 @@ has to operate at, next to the shelf the class is about to build.
 ## What the Office gains
 
 Shelving for the class's deposits, and a retrieval-time test: how long it
-takes to pull a named ledger number back off the shelf.
+takes to pull a named ledger number back off the shelf. Run the test on
+three shelving schemes at the counter this week before choosing which one
+the Office keeps.

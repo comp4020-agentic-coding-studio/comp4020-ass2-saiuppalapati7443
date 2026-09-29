@@ -9,6 +9,7 @@ teachers:
   - perpetua-hale
 object: Wallet
 stage: Proving
+explorable: claim-desk
 related:
   - sessions/06-wallet
 ---
@@ -55,3 +56,5 @@ something only they'd know" fails on both sides more often than it looks.
 
 A claim protocol: the fixed set of questions and evidence the Office will
 accept as proof, and the rule for what happens when a claimant fails one.
+This week's counter exercise runs six claimants against whatever protocol
+the class sets, before it becomes the Office's own.

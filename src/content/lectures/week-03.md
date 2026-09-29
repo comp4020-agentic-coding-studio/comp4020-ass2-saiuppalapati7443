@@ -9,6 +9,7 @@ teachers:
   - perpetua-hale
 object: Keys
 stage: Describing
+explorable: key-describer
 related:
   - sessions/03-keys
 ---
@@ -53,4 +54,6 @@ classification always has a cost, paid by whatever the scheme leaves out.
 
 The intake form: a fixed set of fields every deposit is described against
 from here on, replacing whatever each student would otherwise have written
-by hand.
+by hand. This week's exercise on the counter is the reason: free text
+matches everything or nothing, and a form built from a handful of fields
+gets to one match faster.

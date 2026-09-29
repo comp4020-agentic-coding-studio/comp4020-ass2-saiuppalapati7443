@@ -1,0 +1,204 @@
+---
+interface Claimant {
+  id: string;
+  label: string;
+  isTrueOwner: boolean;
+  checks: Record<CheckId, boolean>;
+}
+
+type CheckId = "contents" | "name" | "where" | "lastFour" | "photoId";
+
+const checks: { id: CheckId; label: string }[] = [
+  { id: "contents", label: "Describe the contents" },
+  { id: "name", label: "Name the card inside" },
+  { id: "where", label: "Say where it was lost" },
+  { id: "lastFour", label: "Give the last four digits of a card" },
+  { id: "photoId", label: "Show matching photo ID" },
+];
+
+const claimants: Claimant[] = [
+  {
+    id: "A",
+    label: "Claimant A",
+    isTrueOwner: true,
+    checks: { contents: true, name: true, where: true, lastFour: true, photoId: true },
+  },
+  {
+    id: "B",
+    label: "Claimant B",
+    isTrueOwner: true,
+    checks: { contents: true, name: true, where: true, lastFour: false, photoId: false },
+  },
+  {
+    id: "C",
+    label: "Claimant C",
+    isTrueOwner: true,
+    checks: { contents: false, name: true, where: true, lastFour: true, photoId: true },
+  },
+  {
+    id: "D",
+    label: "Claimant D",
+    isTrueOwner: false,
+    checks: { contents: false, name: true, where: false, lastFour: false, photoId: false },
+  },
+  {
+    id: "E",
+    label: "Claimant E",
+    isTrueOwner: false,
+    checks: { contents: true, name: true, where: true, lastFour: false, photoId: false },
+  },
+  {
+    id: "F",
+    label: "Claimant F",
+    isTrueOwner: false,
+    checks: { contents: true, name: true, where: true, lastFour: true, photoId: false },
+  },
+];
+
+function verdict(claimant: Claimant, required: CheckId[]) {
+  return required.every((id) => claimant.checks[id]);
+}
+
+const laxRequired: CheckId[] = ["name"];
+const laxWrongReturns = claimants.filter((c) => !c.isTrueOwner && verdict(c, laxRequired)).length;
+const strictRequired: CheckId[] = checks.map((c) => c.id);
+const strictWrongRefusals = claimants.filter((c) => c.isTrueOwner && !verdict(c, strictRequired)).length;
+---
+
+<div class="explorable" data-explorable="claim-desk">
+  <p>
+    Six people are at the counter claiming the same wallet. Choose which checks the claim
+    protocol requires, then run it and see who gets their wallet back.
+  </p>
+
+  <div class="claimdesk-static">
+    <dl class="ledger">
+      <div class="ledger-row">
+        <dt>Requiring only a name on the card</dt>
+        <dd>Returns the wallet to all three true owners, and to {laxWrongReturns} of the three impostors.</dd>
+      </div>
+      <div class="ledger-row">
+        <dt>Requiring every check</dt>
+        <dd>Correctly refuses all three impostors, and wrongly turns away {strictWrongRefusals} of the three true owners.</dd>
+      </div>
+    </dl>
+    <p>Turn on JavaScript to set your own protocol and run it against all six claimants.</p>
+  </div>
+
+  <form class="claimdesk-interactive" hidden>
+    <fieldset class="explorable-fields">
+      <legend>What must a claimant prove?</legend>
+      {
+        checks.map((check) => (
+          <p class="explorable-field">
+            <label>
+              <input type="checkbox" class="claimdesk-check" value={check.id} /> {check.label}
+            </label>
+          </p>
+        ))
+      }
+    </fieldset>
+    <p><button type="button" class="explorable-button claimdesk-run">Run the claim desk</button></p>
+    <dl class="ledger claimdesk-rows">
+      {
+        claimants.map((c) => (
+          <div class="ledger-row claimdesk-row" data-id={c.id} data-owner={String(c.isTrueOwner)}>
+            <dt>{c.label}</dt>
+            <dd class="claimdesk-verdict">Not yet run.</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="explorable-result" aria-live="polite"></p>
+  </form>
+</div>
+
+<script define:vars={{ claimantsData: claimants }}>
+  const container = document.querySelector('[data-explorable="claim-desk"]');
+
+  if (container) {
+    const staticBlock = container.querySelector(".claimdesk-static");
+    const interactive = container.querySelector(".claimdesk-interactive");
+    const checkboxes = Array.from(container.querySelectorAll(".claimdesk-check"));
+    const runButton = container.querySelector(".claimdesk-run");
+    const rows = Array.from(container.querySelectorAll(".claimdesk-row"));
+    const resultEl = container.querySelector(".explorable-result");
+
+    runButton.addEventListener("click", () => {
+      const required = checkboxes.filter((c) => c.checked).map((c) => c.value);
+      let rightReturns = 0;
+      let wrongReturns = 0;
+      let wrongRefusals = 0;
+
+      rows.forEach((row) => {
+        const claimant = claimantsData.find((c) => c.id === row.dataset.id);
+        const verdictEl = row.querySelector(".claimdesk-verdict");
+        const passes = required.every((id) => claimant.checks[id]);
+        const isOwner = row.dataset.owner === "true";
+        row.classList.remove("is-right-return", "is-wrong-return", "is-wrong-refusal");
+
+        if (passes && isOwner) {
+          verdictEl.textContent = "Returned — the true owner.";
+          row.classList.add("is-right-return");
+          rightReturns += 1;
+        } else if (passes && !isOwner) {
+          verdictEl.textContent = "Returned — wrongly, to an impostor.";
+          row.classList.add("is-wrong-return");
+          wrongReturns += 1;
+        } else if (!passes && isOwner) {
+          verdictEl.textContent = "Refused — wrongly, the true owner.";
+          row.classList.add("is-wrong-refusal");
+          wrongRefusals += 1;
+        } else {
+          verdictEl.textContent = "Refused — correctly, an impostor.";
+        }
+      });
+
+      resultEl.textContent = `${rightReturns} right returns, ${wrongReturns} wrong returns, ${wrongRefusals} wrong refusals, with ${required.length} check${required.length === 1 ? "" : "s"} required.`;
+    });
+
+    staticBlock.hidden = true;
+    interactive.hidden = false;
+  }
+</script>
+
+<style>
+  .explorable {
+    margin-block: var(--at-spacing-xl);
+  }
+
+  .explorable-fields {
+    border: 1px solid var(--at-divider);
+    border-radius: var(--at-border-radius);
+    padding: var(--at-spacing-md);
+  }
+
+  .explorable-field {
+    margin: var(--at-spacing-xs) 0;
+  }
+
+  .explorable-button {
+    font: inherit;
+    padding: var(--at-spacing-sm) var(--at-spacing-md);
+    border: 1px dashed var(--at-divider);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg-elevated);
+    color: var(--at-text);
+    cursor: pointer;
+  }
+
+  .claimdesk-row.is-right-return {
+    border-inline-start: 3px solid var(--at-success, var(--at-accent));
+    padding-inline-start: var(--at-spacing-sm);
+  }
+
+  .claimdesk-row.is-wrong-return,
+  .claimdesk-row.is-wrong-refusal {
+    border-inline-start: 3px solid var(--at-error, var(--at-text-muted));
+    padding-inline-start: var(--at-spacing-sm);
+  }
+
+  .explorable-result:empty {
+    display: none;
+  }
+</style>

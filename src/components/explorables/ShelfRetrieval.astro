@@ -1,0 +1,267 @@
+---
+const TYPES = ["Bags", "Electronics", "Clothing", "Stationery", "Sports gear", "Miscellaneous"];
+
+const byLedgerNumber = Array.from({ length: 36 }, (_, i) => i + 1);
+
+const arrivalOrder: number[] = [];
+for (let i = 0; i < 18; i++) {
+  arrivalOrder.push(byLedgerNumber[18 + i]);
+  arrivalOrder.push(byLedgerNumber[i]);
+}
+
+const typeOf = new Map<number, string>();
+arrivalOrder.forEach((num, i) => typeOf.set(num, TYPES[i % 6]));
+
+const byType = [...arrivalOrder].sort((a, b) => TYPES.indexOf(typeOf.get(a)!) - TYPES.indexOf(typeOf.get(b)!));
+
+const schemesData = {
+  arrival: {
+    label: "Arrival order",
+    caption: "Shelved in the order each deposit arrived — first come, first placed.",
+    order: arrivalOrder,
+  },
+  type: {
+    label: "By object type",
+    caption: "Shelved by category — six groups of six, sorted before anyone knows which ledger numbers matter.",
+    order: byType,
+  },
+  number: {
+    label: "By ledger number",
+    caption: "Shelved in ledger-number order — slot N holds ledger no. N.",
+    order: byLedgerNumber,
+  },
+};
+
+const exampleNumber = 17;
+const positions = Object.fromEntries(
+  Object.entries(schemesData).map(([key, s]) => [key, s.order.indexOf(exampleNumber) + 1]),
+);
+---
+
+<div class="explorable" data-explorable="shelf-retrieval">
+  <p>
+    Thirty-six deposits, one shelf, three ways to arrange it. Pick a scheme, ask for five random
+    ledger numbers, and see how many slots you have to inspect to find each one.
+  </p>
+
+  <div class="shelf-static">
+    <dl class="ledger">
+      <div class="ledger-row">
+        <dt>By ledger number</dt>
+        <dd>Ledger no. {exampleNumber} sits at position {positions.number}.</dd>
+      </div>
+      <div class="ledger-row">
+        <dt>Arrival order</dt>
+        <dd>Ledger no. {exampleNumber} sits at position {positions.arrival}.</dd>
+      </div>
+      <div class="ledger-row">
+        <dt>By object type</dt>
+        <dd>Ledger no. {exampleNumber} sits at position {positions.type}.</dd>
+      </div>
+    </dl>
+    <p>
+      Only one scheme puts a ledger number where you can compute it in advance. Turn on
+      JavaScript to run the other four numbers yourself and compare inspection counts.
+    </p>
+  </div>
+
+  <div class="shelf-interactive" hidden>
+    <fieldset class="explorable-fields">
+      <legend>Shelving scheme</legend>
+      <p class="explorable-field">
+        <label><input type="radio" name="shelf-scheme" value="arrival" checked /> Arrival order</label>
+      </p>
+      <p class="explorable-field">
+        <label><input type="radio" name="shelf-scheme" value="type" /> By object type</label>
+      </p>
+      <p class="explorable-field">
+        <label><input type="radio" name="shelf-scheme" value="number" /> By ledger number</label>
+      </p>
+    </fieldset>
+    <p class="shelf-caption"></p>
+    <p><button type="button" class="explorable-button explorable-ask">Ask for 5 ledger numbers</button></p>
+    <p class="shelf-targets" aria-live="polite"></p>
+    <ul class="shelf shelf-grid"></ul>
+    <p class="explorable-result" aria-live="polite"></p>
+    <dl class="ledger shelf-log"></dl>
+  </div>
+</div>
+
+<script define:vars={{ schemesData }}>
+  const container = document.querySelector('[data-explorable="shelf-retrieval"]');
+
+  if (container) {
+    const staticBlock = container.querySelector(".shelf-static");
+    const interactiveBlock = container.querySelector(".shelf-interactive");
+    const grid = container.querySelector(".shelf-grid");
+    const schemeRadios = Array.from(container.querySelectorAll('input[name="shelf-scheme"]'));
+    const captionEl = container.querySelector(".shelf-caption");
+    const askButton = container.querySelector(".explorable-ask");
+    const targetsEl = container.querySelector(".shelf-targets");
+    const resultEl = container.querySelector(".explorable-result");
+    const logEl = container.querySelector(".shelf-log");
+
+    let currentScheme = "arrival";
+    let targets = [];
+    let targetIndex = 0;
+    let clicksForTarget = 0;
+    let perTargetCounts = [];
+
+    function resetSlots() {
+      Array.from(grid.querySelectorAll(".shelf-slot")).forEach((btn, i) => {
+        btn.disabled = false;
+        btn.textContent = `Slot ${i + 1}`;
+      });
+    }
+
+    function renderGrid() {
+      const order = schemesData[currentScheme].order;
+      grid.innerHTML = "";
+      order.forEach((number, i) => {
+        const li = document.createElement("li");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "shelf-slot explorable-button";
+        button.textContent = `Slot ${i + 1}`;
+        button.setAttribute("aria-label", `Inspect slot ${i + 1}`);
+        button.addEventListener("click", () => inspect(button, number));
+        li.appendChild(button);
+        grid.appendChild(li);
+      });
+      captionEl.textContent = schemesData[currentScheme].caption;
+    }
+
+    function announceCurrentTarget() {
+      targetsEl.textContent = `Trial ${targetIndex + 1} of ${targets.length}: find ledger no. ${targets[targetIndex]}.`;
+    }
+
+    function inspect(button, number) {
+      if (button.disabled || targets.length === 0 || targetIndex >= targets.length) return;
+      button.disabled = true;
+      button.textContent = `No. ${number}`;
+      clicksForTarget += 1;
+      if (number === targets[targetIndex]) {
+        perTargetCounts.push(clicksForTarget);
+        targetIndex += 1;
+        clicksForTarget = 0;
+        resetSlots();
+        if (targetIndex < targets.length) {
+          announceCurrentTarget();
+        } else {
+          finishRun();
+        }
+      }
+    }
+
+    function pickTargets(n) {
+      const pool = Array.from({ length: 36 }, (_, i) => i + 1);
+      const picked = [];
+      for (let i = 0; i < n && pool.length; i++) {
+        const idx = Math.floor(Math.random() * pool.length);
+        picked.push(pool.splice(idx, 1)[0]);
+      }
+      return picked;
+    }
+
+    function finishRun() {
+      const total = perTargetCounts.reduce((a, b) => a + b, 0);
+      const average = (total / perTargetCounts.length).toFixed(1);
+      const schemeLabel = schemesData[currentScheme].label;
+      resultEl.textContent = `${schemeLabel}: ${total} inspections across ${perTargetCounts.length} trials, averaging ${average} per trial.`;
+      const row = document.createElement("div");
+      row.className = "ledger-row";
+      const dt = document.createElement("dt");
+      dt.textContent = schemeLabel;
+      const dd = document.createElement("dd");
+      dd.textContent = `${total} inspections, ${average} average (trials: ${perTargetCounts.join(", ")})`;
+      row.append(dt, dd);
+      logEl.appendChild(row);
+      targetsEl.textContent = "";
+    }
+
+    askButton.addEventListener("click", () => {
+      targets = pickTargets(5);
+      targetIndex = 0;
+      clicksForTarget = 0;
+      perTargetCounts = [];
+      resetSlots();
+      resultEl.textContent = "";
+      announceCurrentTarget();
+    });
+
+    schemeRadios.forEach((radio) => {
+      radio.addEventListener("change", () => {
+        if (!radio.checked) return;
+        currentScheme = radio.value;
+        targets = [];
+        targetIndex = 0;
+        clicksForTarget = 0;
+        perTargetCounts = [];
+        targetsEl.textContent = "";
+        resultEl.textContent = "";
+        renderGrid();
+      });
+    });
+
+    staticBlock.hidden = true;
+    interactiveBlock.hidden = false;
+    renderGrid();
+  }
+</script>
+
+<style>
+  .explorable {
+    margin-block: var(--at-spacing-xl);
+  }
+
+  .explorable-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--at-spacing-md);
+    border: 1px solid var(--at-divider);
+    border-radius: var(--at-border-radius);
+    padding: var(--at-spacing-md);
+  }
+
+  .explorable-field {
+    margin: 0;
+  }
+
+  .shelf-caption {
+    color: var(--at-text-secondary);
+    font-size: var(--at-font-size-sm);
+  }
+
+  .explorable-button {
+    font: inherit;
+    padding: var(--at-spacing-sm) var(--at-spacing-md);
+    border: 1px dashed var(--at-divider);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg-elevated);
+    color: var(--at-text);
+    cursor: pointer;
+  }
+
+  .explorable-button:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+
+  .shelf-grid {
+    grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
+  }
+
+  .shelf-grid .explorable-button {
+    width: 100%;
+    font-size: var(--at-font-size-xs);
+    padding: var(--at-spacing-xs);
+  }
+
+  .explorable-result:empty {
+    display: none;
+  }
+
+  .shelf-log:empty {
+    display: none;
+  }
+</style>

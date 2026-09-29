@@ -1,0 +1,310 @@
+---
+interface Bunch {
+  id: string;
+  count: number;
+  ring: "split" | "carabiner";
+  fob: "none" | "red" | "blue" | "black";
+  tag: boolean;
+  distinctive: boolean;
+  words: string[];
+}
+
+const bunches: Bunch[] = [
+  {
+    id: "A",
+    count: 3,
+    ring: "split",
+    fob: "red",
+    tag: false,
+    distinctive: false,
+    words: ["three", "3", "red", "split", "ring", "keys"],
+  },
+  {
+    id: "B",
+    count: 5,
+    ring: "carabiner",
+    fob: "none",
+    tag: true,
+    distinctive: false,
+    words: ["five", "5", "carabiner", "clip", "tag", "keys"],
+  },
+  {
+    id: "C",
+    count: 2,
+    ring: "split",
+    fob: "black",
+    tag: false,
+    distinctive: true,
+    words: ["two", "2", "black", "split", "ring", "car", "distinctive", "big", "keys"],
+  },
+  {
+    id: "D",
+    count: 4,
+    ring: "split",
+    fob: "blue",
+    tag: true,
+    distinctive: false,
+    words: ["four", "4", "blue", "split", "ring", "tag", "keys"],
+  },
+  {
+    id: "E",
+    count: 3,
+    ring: "carabiner",
+    fob: "black",
+    tag: false,
+    distinctive: false,
+    words: ["three", "3", "black", "carabiner", "clip", "keys"],
+  },
+  {
+    id: "F",
+    count: 6,
+    ring: "split",
+    fob: "none",
+    tag: false,
+    distinctive: true,
+    words: ["six", "6", "split", "ring", "bottle", "opener", "distinctive", "keys"],
+  },
+];
+
+const fobStroke: Record<Bunch["fob"], string> = {
+  none: "",
+  red: "var(--at-error)",
+  blue: "var(--at-info)",
+  black: "var(--at-text)",
+};
+
+function keyPositions(count: number) {
+  const span = 60;
+  const start = 15;
+  return Array.from({ length: count }, (_, i) => start + (i * (span / Math.max(count - 1, 1))));
+}
+
+function describe(b: Bunch) {
+  const ring = b.ring === "split" ? "a split ring" : "a carabiner clip";
+  const fob = b.fob === "none" ? "no fob" : `a ${b.fob} fob`;
+  const tag = b.tag ? "a paper tag attached" : "no tag";
+  const distinctive = b.distinctive ? "one larger, distinctive key" : "no distinctive key";
+  return `${b.count} keys on ${ring}, ${fob}, ${tag}, ${distinctive}.`;
+}
+---
+
+<div class="explorable" data-explorable="key-describer">
+  <p>
+    Six key bunches are on the counter. Try to build a description — from the fields below, or
+    in your own words — that matches exactly one bunch, using as few fields as you can.
+  </p>
+  <ul class="shelf key-shelf">
+    {
+      bunches.map((b) => {
+        const xs = keyPositions(b.count);
+        const fobIndex = xs.length - 1;
+        return (
+          <li
+            class="key-bunch"
+            data-id={b.id}
+            data-count={b.count}
+            data-ring={b.ring}
+            data-fob={b.fob}
+            data-tag={String(b.tag)}
+            data-distinctive={String(b.distinctive)}
+            data-words={b.words.join(",")}
+          >
+            <svg viewBox="0 0 90 105" width="90" height="105" role="img" aria-label={describe(b)}>
+              {b.ring === "split" ? (
+                <circle cx="45" cy="15" r="10" fill="none" stroke="var(--at-text)" stroke-width="3" />
+              ) : (
+                <rect x="35" y="5" width="20" height="20" rx="10" fill="none" stroke="var(--at-text)" stroke-width="3" />
+              )}
+              {xs.map((x, i) => {
+                const isDistinctive = b.distinctive && i === 0;
+                const stroke = isDistinctive ? "var(--at-accent)" : "var(--at-text)";
+                const shaftWidth = isDistinctive ? 5 : 3;
+                const bowR = isDistinctive ? 6 : 4;
+                return (
+                  <Fragment>
+                    <line x1={x} y1="25" x2={x} y2="35" stroke={stroke} stroke-width="2" />
+                    <circle cx={x} cy="40" r={bowR} fill="var(--at-bg-elevated)" stroke={stroke} stroke-width={isDistinctive ? 3 : 2} />
+                    <rect x={x - shaftWidth / 2} y="45" width={shaftWidth} height="26" fill={stroke} />
+                    <rect x={x - shaftWidth / 2} y="68" width={shaftWidth + (isDistinctive ? 6 : 4)} height="4" fill={stroke} />
+                  </Fragment>
+                );
+              })}
+              {b.fob !== "none" && (
+                <rect x={xs[fobIndex] - 6} y="80" width="12" height="16" rx="3" fill={fobStroke[b.fob]} />
+              )}
+              {b.tag && (
+                <Fragment>
+                  <line x1={xs[fobIndex]} y1="80" x2="78" y2="72" stroke="var(--at-text-muted)" stroke-width="1" />
+                  <rect x="66" y="60" width="20" height="14" fill="var(--at-bg)" stroke="var(--at-text)" stroke-width="1.5" />
+                </Fragment>
+              )}
+            </svg>
+            <p class="key-caption">{describe(b)}</p>
+          </li>
+        );
+      })
+    }
+  </ul>
+
+  <form class="explorable-fields">
+    <p class="explorable-field">
+      <label for="key-count">Number of keys</label>
+      <select id="key-count" class="explorable-control" data-field="count">
+        <option value="any">Any</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </p>
+    <p class="explorable-field">
+      <label for="key-ring">Ring type</label>
+      <select id="key-ring" class="explorable-control" data-field="ring">
+        <option value="any">Any</option>
+        <option value="split">Split ring</option>
+        <option value="carabiner">Carabiner clip</option>
+      </select>
+    </p>
+    <p class="explorable-field">
+      <label for="key-fob">Fob colour</label>
+      <select id="key-fob" class="explorable-control" data-field="fob">
+        <option value="any">Any</option>
+        <option value="none">No fob</option>
+        <option value="red">Red</option>
+        <option value="blue">Blue</option>
+        <option value="black">Black</option>
+      </select>
+    </p>
+    <p class="explorable-field">
+      <label for="key-tag">Tag</label>
+      <select id="key-tag" class="explorable-control" data-field="tag">
+        <option value="any">Any</option>
+        <option value="true">Has a tag</option>
+        <option value="false">No tag</option>
+      </select>
+    </p>
+    <p class="explorable-field">
+      <label for="key-distinctive">Distinctive key</label>
+      <select id="key-distinctive" class="explorable-control" data-field="distinctive">
+        <option value="any">Any</option>
+        <option value="true">Has a distinctive key</option>
+        <option value="false">No distinctive key</option>
+      </select>
+    </p>
+    <p class="explorable-field">
+      <label for="key-freetext">Describe it in your own words</label>
+      <input type="text" id="key-freetext" class="explorable-freetext" placeholder="e.g. black keys" />
+    </p>
+  </form>
+  <p class="explorable-result" aria-live="polite"></p>
+</div>
+
+<script>
+  const container = document.querySelector<HTMLElement>('[data-explorable="key-describer"]');
+
+  if (container) {
+    const bunchEls = Array.from(container.querySelectorAll<HTMLLIElement>(".key-bunch"));
+    const controls = Array.from(container.querySelectorAll<HTMLSelectElement>(".explorable-control"));
+    const freetext = container.querySelector<HTMLInputElement>(".explorable-freetext");
+    const resultEl = container.querySelector<HTMLElement>(".explorable-result");
+    const captions = Array.from(container.querySelectorAll<HTMLElement>(".key-caption"));
+
+    captions.forEach((c) => (c.hidden = true));
+
+    function update() {
+      if (!resultEl) return;
+
+      const activeFields = controls.filter((c) => c.value !== "any").length;
+      const filtered = bunchEls.filter((el) =>
+        controls.every((control) => {
+          if (control.value === "any") return true;
+          return el.dataset[control.dataset.field!] === control.value;
+        }),
+      );
+
+      bunchEls.forEach((el) => {
+        el.classList.toggle("is-excluded", !filtered.includes(el));
+      });
+
+      const words = (freetext?.value ?? "")
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        .filter(Boolean);
+      const freeMatches =
+        words.length === 0
+          ? []
+          : bunchEls.filter((el) => {
+              const bunchWords = el.dataset.words?.split(",") ?? [];
+              return bunchWords.some((w) => words.includes(w));
+            });
+
+      const fieldWord = activeFields === 1 ? "field" : "fields";
+      const freeText =
+        words.length === 0
+          ? "Type a free-text description to compare."
+          : `Free text matches ${freeMatches.length} of 6.`;
+      resultEl.textContent = `Controlled vocabulary: ${filtered.length} of 6 match, using ${activeFields} ${fieldWord}. ${freeText}`;
+    }
+
+    controls.forEach((control) => control.addEventListener("change", update));
+    freetext?.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .explorable {
+    margin-block: var(--at-spacing-xl);
+  }
+
+  .key-shelf {
+    margin-block: var(--at-spacing-lg);
+  }
+
+  .key-bunch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--at-spacing-sm);
+    padding: var(--at-spacing-md);
+    border: 1px solid var(--at-divider);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg-elevated);
+    text-align: center;
+    transition: opacity 0.2s ease;
+  }
+
+  .key-bunch.is-excluded {
+    opacity: 0.3;
+  }
+
+  .key-caption {
+    margin: 0;
+    font-size: var(--at-font-size-sm);
+    color: var(--at-text-secondary);
+  }
+
+  .explorable-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: var(--at-spacing-md);
+    margin-block: var(--at-spacing-lg);
+  }
+
+  .explorable-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--at-spacing-xs);
+  }
+
+  .explorable-result:empty {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .key-bunch {
+      transition: none;
+    }
+  }
+</style>

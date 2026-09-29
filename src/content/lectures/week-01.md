@@ -10,6 +10,7 @@ teachers:
 object: Umbrella
 stage: Losing
 slides: /decks/week-01/
+explorable: umbrella-retrace
 related:
   - sessions/01-umbrella
 ---
