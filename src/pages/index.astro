@@ -10,9 +10,6 @@ import { sessionLabels, siteConfig } from "../site-config";
 import { weeks } from "../data/weeks";
 import "../styles/office.css";
 
-// STARTER_CONTENT: replace the hero artwork and its alt text below, then
-// remove this comment.
-
 const publishedLectures = await getCollection(
   "lectures",
   (entry) => entry.data.published !== false,
@@ -25,7 +22,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
   title={`${courseMeta.code}: ${courseMeta.title}`}
   description={courseMeta.description}
   heroImage={heroImage}
-  heroImageAlt="A lecture theatre reduced to flat gold and black shapes, rows of seats sweeping past the frame, in a two-ink risograph print"
+  heroImageAlt="Five luggage tags hanging from a rail by string, in flat gold and black, the centre tag reading SLOP2618"
   {...siteConfig}
 >
   <ul class="course-tags" aria-label="Course tags">
