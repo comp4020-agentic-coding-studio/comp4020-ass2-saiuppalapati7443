@@ -33,7 +33,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
     <h2 id="the-shelf">The Shelf</h2>
     <p>
       Twelve weeks, twelve cases. Every tag holds a lost object waiting on
-      intake --- flip it for the question the shift answers and what the
+      intake — flip it for the question the shift answers and what the
       Office gains once it's closed.
     </p>
     <ul class="shelf">
@@ -74,7 +74,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
     <h2 id="follow-a-lost-thing">Follow a lost thing</h2>
     <p>
       Every case moves through the same twelve stages, in the same order.
-      Scroll the shelf to see the whole route a lost thing takes.
+      Scroll the strip to see the whole route a lost thing takes.
     </p>
     <ol class="pipeline" aria-label="The office's twelve stages, in order">
       {
@@ -137,14 +137,17 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
   <h2>Where to go next</h2>
   <CardGrid columns={2}>
+    <Card title="Lectures" href="/lectures/">
+      <p>Twelve objects, twelve questions, in the order a lost thing actually moves through an office.</p>
+    </Card>
     <Card title={sessionLabels.plural} href="/sessions/">
-      <p>The weekly schedule and what happens in each teaching session.</p>
+      <p>Where the Office gets built, one shift at a time, from the hand-in point to Reclaim Day.</p>
     </Card>
     <Card title="Assessment" href="/assessments/">
-      <p>What is marked, what it is worth, and when it is due.</p>
+      <p>From a counter observed to the Reclaim Report: what is marked, what it is worth, and when it is due.</p>
     </Card>
     <Card title="People" href="/people/">
-      <p>Who teaches the course and how to reach them.</p>
+      <p>Who runs the counter, who teaches the lecture, and who to ask when a shift goes wrong.</p>
     </Card>
   </CardGrid>
 </ContentLayout>

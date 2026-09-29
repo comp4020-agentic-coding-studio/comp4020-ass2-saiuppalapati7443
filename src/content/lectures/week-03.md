@@ -15,9 +15,9 @@ related:
 ---
 
 A set of keys, handed in at the counter, needs a description before it can
-become a case. "Black keys" is not one: half the keys handed in on any
-given week are black, and a description that matches half the shelf
-matches none of it. Last week's hand-in point solved for getting an object
+become a case. "Black keys" is not one: most keys are black, and a
+description that matches most of the shelf matches none of it. Last
+week's hand-in point solved for getting an object
 to the Office at all. This week's question is what happens once it
 arrives: can you write an object down so a stranger knows it?
 
