@@ -150,8 +150,11 @@ shelves, inside the Slop brand tokens.
   components with small `<script>` blocks.
 - Must work at a 390px phone width and at desktop width.
 - One shared visual vocabulary (tag, ticket, ledger row, shelf); shared styles
-  live in `src/styles/office.css`, imported by `src/layouts/PageLayout.astro`,
-  using the brand CSS variables.
+  live in `src/styles/office.css`, using the brand CSS variables. It is
+  imported by `src/layouts/PageLayout.astro` for Markdown pages, and directly
+  by any `.astro` page that renders through the theme's `ContentLayout`
+  (`index`, `lectures/[slug]`, `sessions/[slug]`), since those do not pass
+  through `PageLayout`.
 
 ## Platform hygiene
 
