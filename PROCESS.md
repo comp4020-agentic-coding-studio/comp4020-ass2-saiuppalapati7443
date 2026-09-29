@@ -1,53 +1,19 @@
 # Process overview
 
-<!-- TEMPLATE: this file is a shape to fill in, not a form. Replace everything
-     in it with your own overview, and delete this comment — `pnpm
-     check:evidence` will remind you if it's still here. -->
-
-Written by you, for a reader: how you got from the brief to the harness and
-agentic workflow behind this submission. Markers read this file and follow its
-citations; they don't trawl the repo for evidence you didn't point at.
-
-This file is the shape; the course site's
-[assessment page](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#what-you-submit)
-is the requirement, and its
-[word counts](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#word-counts)
-cover every deliverable.
-
 ## What I built
 
-One paragraph: the thing, and the idea behind it.
+SLOP2618 *Lost Property: The Systems Behind Things That Go Missing* is a second-year course built on one sentence: things are not lost, they are unrecorded. Each of twelve weeks follows one object (umbrella, glove, keys, through to the box) through one stage of a lost property pipeline, and the class builds its own lost property office a piece at a time until Reclaim Day, when every student must get back the object they deposited in week 1. Four lectures carry hands-on explorables, borrowing the principle of Brown's *Seeing Theory*: the doing is the lesson.
 
 ## How I got here
 
-The account of the process: how the work actually went, and how you knew the
-result was right. Tell it in whatever order makes it clear. A weekly prototype
-needs a paragraph or two; an assignment needs more.
+I started from a position, not a topic. What held *Calling Bullshit* and *How to Make (Almost) Anything* together was one claim held for a semester and a syllabus readable as a list of things. So I decided a good course needs one idea every page argues, a structure a student can predict, something to do rather than only read, and sources that exist. I worked out the design with Claude in chat, then directed Claude Code with prompts.
 
-Cite the record as you go, as links whose text is the commit hash or range and
-whose target is this repo's commit or compare URL, so a reader clicks straight
-to the evidence:
+The harness had to come first, and my first attempt proved it. When I asked Claude Code to build the weeks data before my CLAUDE.md was in the repo, it invented a different curriculum in one prompt (a violin, love letters, a carved mask) and wrote it into the harness as if decided. The build stayed green. That told me the build cannot see coherence. The real harness went in at [`a64318c`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-saiuppalapati7443/commit/a64318c): the one idea, a twelve-row table of object, stage, question and what the Office gains, deposit rules stated identically everywhere, a clerk's voice with a banned-phrase list, and vetted sources, because an agent asked for "a study on lost wallets" will produce one whether or not it exists. The table is mirrored in `src/data/weeks.ts`, so the home page shelf and the week navigator read the spine instead of restating it.
 
-- one commit: [`a1b2c3d`](https://github.com/YOUR-ORG/YOUR-REPO/commit/a1b2c3d)
-- a range:
-  [`a1b2c3d...e4f5a6b`](https://github.com/YOUR-ORG/YOUR-REPO/compare/a1b2c3d...e4f5a6b)
+The agent was most useful when it refused. Twice I told it files had been replaced when they had not; it checked the disk and stopped rather than invent the wording. It was least trustworthy with the platform: it widened the content schema to hold `object` and `stage`, which the README treats as fixed, so I had it revert and rely on the loose schema ([`06ccf1b`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-saiuppalapati7443/commit/06ccf1b)). When it found office.css had to be imported in two places, I corrected the harness rather than let a rule go stale ([`065e78d`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-saiuppalapati7443/commit/065e78d)).
 
-To pair a prompt with the commit it produced, quote the prompt (curated, not a
-full transcript) next to the citation:
+Weeks 1–6 and 7–12 were separate passes ([`0ba1c2a`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-saiuppalapati7443/commit/0ba1c2a), [`06ce412`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-saiuppalapati7443/commit/06ce412)), each read against the harness's five-question checklist; a counter shift that could be swapped with another week's was rewritten. Each explorable ([`28037f8`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-saiuppalapati7443/commit/28037f8)) had to answer its week's question: the key describer only makes its point if free text over-matches and a controlled vocabulary narrows to one.
 
-> the prompt, verbatim
+`spec/` records what I decided must stay true that the build cannot see ([`76d263d`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-saiuppalapati7443/commit/76d263d)): one lecture and one shift per week on the right days, each lecture matching the table, weights summing to 100, the deposit rules identical on three pages, no banned phrase, a real deck, and none of the discarded draft's words ever returning. I deliberately left out whether the prose is good and whether a page fits a phone. The agent had no browser, so I checked pages at 390px myself; a test for "reads well" would be one I could pass without the course getting better.
 
-Screenshots are welcome where one carries the point better than a sentence does.
-Commit the file to this repo and link it with a **relative** path, which is what
-makes it render on GitHub: `![alt text](docs/before.png)`. Images don't count
-towards the word count and don't replace the citation.
-
-## Before you ship
-
-`pnpm check:evidence` verifies that this comment is gone, that your citations
-resolve to real commits, that a crit week's reflection entry is in
-`reflections/`, and that your `CLAUDE.md` is there. It checks that your account
-is traceable, not that it is good: that is the marker's call.
-
-Images aren't checked: unlike a citation whose SHA doesn't resolve, a broken
-image is visible the moment this file is rendered on GitHub.
+Assessments and policies ([`827f169`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-saiuppalapati7443/commit/827f169)), the week 1 deck ([`2fd7e82`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-saiuppalapati7443/commit/2fd7e82)) and the artwork ([`3ed7e16`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-saiuppalapati7443/commit/3ed7e16)) completed the site.
