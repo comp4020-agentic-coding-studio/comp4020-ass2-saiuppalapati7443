@@ -1,0 +1,65 @@
+---
+import { getCollection } from "astro:content";
+import { withBase } from "astro-theme-university/url";
+import { weeks, type CourseWeek } from "../data/weeks";
+
+interface Props {
+  /** The week number of the page this navigator is rendered on. */
+  currentWeek: number;
+  /** Which collection's pages this navigator links between. */
+  kind: "lectures" | "sessions";
+}
+
+const { currentWeek, kind } = Astro.props;
+
+const publishedEntries = await getCollection(kind, (entry) => entry.data.published !== false);
+const existingIds = new Set(publishedEntries.map((entry) => entry.id));
+
+const pad = (n: number) => String(n).padStart(2, "0");
+const slugFor = (week: CourseWeek) => (kind === "lectures" ? week.lectureSlug : week.shiftSlug);
+const hrefFor = (week: CourseWeek) => withBase(`/${kind}/${slugFor(week)}/`);
+const exists = (week: CourseWeek) => existingIds.has(slugFor(week));
+
+const currentIndex = weeks.findIndex((week) => week.week === currentWeek);
+const previous = currentIndex > 0 ? weeks[currentIndex - 1] : undefined;
+const next =
+  currentIndex >= 0 && currentIndex < weeks.length - 1 ? weeks[currentIndex + 1] : undefined;
+---
+
+<nav class="week-navigator" aria-label="The office's twelve weeks">
+  <ol class="pipeline">
+    {
+      weeks.map((week) => (
+        <li>
+          {exists(week) ? (
+            <a
+              class="ticket"
+              href={hrefFor(week)}
+              aria-current={week.week === currentWeek ? "step" : undefined}
+            >
+              <span class="ticket-index" aria-hidden="true">
+                {pad(week.week)}
+              </span>
+              {week.object}
+            </a>
+          ) : (
+            <span class="ticket" aria-current={week.week === currentWeek ? "step" : undefined}>
+              <span class="ticket-index" aria-hidden="true">
+                {pad(week.week)}
+              </span>
+              {week.object}
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+  <p class="week-navigator-links">
+    {previous && exists(previous) ? (
+      <a href={hrefFor(previous)}>← previous object: {previous.object}</a>
+    ) : (
+      <span />
+    )}
+    {next && exists(next) && <a href={hrefFor(next)}>next object: {next.object} →</a>}
+  </p>
+</nav>

@@ -1,30 +1,63 @@
 ---
-title: Opening lecture
+title: "Umbrella: where things leave us"
 description:
-  The first lecture — what the course is, why it is shaped this way, and what
-  happens in week 1
+  Opening lecture. A black umbrella, the doorway effect, and the deposit
+  every student makes into the class Office this week.
 week: 1
-date: 2027-02-22
+date: 2027-02-23
 teachers:
   - perpetua-hale
+object: Umbrella
+stage: Losing
 slides: /decks/week-01/
 related:
-  - sessions/01-getting-started
+  - sessions/01-umbrella
 ---
 
-<!-- STARTER_CONTENT: replace this lecture, then remove this comment. -->
+A black umbrella, unlabelled, is this week's object. You need it at the bus
+stop and across the car park, and by the time you are inside and dry you do
+not need it at all — which is usually the exact moment you put it down and
+walk on without it. This week's question: where, exactly, do things leave
+us? SLOP2618 spends a semester answering that question one object at a
+time. Each week takes one lost thing through one stage of the pipeline that
+decides whether it comes home, and in week 12 you run that pipeline for
+real, on an object of your own.
 
-Replace this page. A lecture entry says what was covered and links to the pages
-that own the detail, so the lecture stays short and nothing is explained twice.
+## Loss happens at a threshold
 
-The `related:` ref above is a graph edge: it renders on this page and on the
-session's, so declare a connection once, on whichever side is convenient.
+An umbrella is rarely lost in the middle of doing something. It is lost at
+the joins: getting off the bus, walking through a doorway, standing up from
+a chair. Radvansky, Krawietz and Tamplin found that simply walking through a
+doorway makes people forget things they were holding in mind a moment
+before, even when nothing about the room or the task has changed. Crossing a
+boundary appears to close a mental file, and whatever was attached to it —
+an errand, a plan, an umbrella — goes with it.
 
-The page renders its `slides:` link automatically. Decks are markdown too,
-under `src/decks/`; the path is part of the lecture's API metadata.
+That is not carelessness. An umbrella earns your attention only while it is
+raining and only while your hands are full of it. The moment those
+conditions end, so does the reason to track it. The object has not become
+less valuable; it has become invisible to the system — your attention —
+that was keeping tabs on it.
 
-## Outline
+## Depositing with the Office
 
-- what the course is for
-- how the weeks are shaped
-- what to do before the first session
+This week you make the same kind of deposit the course will spend all
+semester building a system around. Bring one object that is ordinary and
+replaceable, worth under $20, and not ID, not keys that open anything, not
+medication, not money, and not anything you will need before week 12. Hand
+it to the Office. From this point the object is not yours to check on; it is
+a case, and the rest of the semester is spent building the system that has
+to look after it without you.
+
+## Reading
+
+Radvansky, Krawietz & Tamplin (2011), "Walking through doorways causes
+forgetting", *Quarterly Journal of Experimental Psychology*. Read it for the
+mechanism behind this week's argument: forgetting tied to a boundary, not to
+how much you cared.
+
+## What the Office gains
+
+The Office opens. Every student's deposit becomes an entry in its first
+ledger, numbered in the order it arrives — the record the rest of the
+semester works from.

@@ -2,12 +2,23 @@
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import { withBase } from "astro-theme-university/url";
+import { getCollection } from "astro:content";
 import heroImage from "../assets/images/hero-home.avif";
 import { courseMeta } from "../course-config";
 import { sessionLabels, siteConfig } from "../site-config";
+import { weeks } from "../data/weeks";
+import "../styles/office.css";
 
 // STARTER_CONTENT: replace the hero artwork and its alt text below, then
 // remove this comment.
+
+const publishedLectures = await getCollection(
+  "lectures",
+  (entry) => entry.data.published !== false,
+);
+const lectureSlugs = new Set(publishedLectures.map((entry) => entry.id));
+const pad = (n: number) => String(n).padStart(2, "0");
 ---
 
 <ContentLayout
@@ -21,18 +32,113 @@ import { sessionLabels, siteConfig } from "../site-config";
     {courseMeta.tags.map((tag) => <li>{tag}</li>)}
   </ul>
 
-  <!-- STARTER_CONTENT: replace the authored page below, then remove this comment. -->
-  <h2>What you will do</h2>
-  <p>
-    Say what a student spends their time on — the making, reading, arguing or
-    measuring that fills the weeks. Name the artefact they walk out with.
-  </p>
+  <section aria-labelledby="the-shelf">
+    <h2 id="the-shelf">The Shelf</h2>
+    <p>
+      Twelve weeks, twelve cases. Every tag holds a lost object waiting on
+      intake --- flip it for the question the shift answers and what the
+      Office gains once it's closed.
+    </p>
+    <ul class="shelf">
+      {
+        weeks.map((week) => (
+          <li>
+            <details class="tag">
+              <summary>
+                <span class="tag-week">Week {pad(week.week)}</span>
+                <span class="tag-object">{week.object}</span>
+                <span class="tag-stage">{week.stage}</span>
+                <span class="tag-flip-hint">
+                  Flip for the question
+                  <span class="tag-flip-icon" aria-hidden="true">
+                    ▸
+                  </span>
+                </span>
+              </summary>
+              <div class="tag-back">
+                <p class="tag-question">{week.question}</p>
+                <p class="tag-gains">
+                  <strong>Office gains:</strong> {week.officeGains}
+                </p>
+                {lectureSlugs.has(week.lectureSlug) && (
+                  <p>
+                    <a href={withBase(`/lectures/${week.lectureSlug}/`)}>Read the lecture →</a>
+                  </p>
+                )}
+              </div>
+            </details>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
 
-  <h2>Who it is for</h2>
-  <p>
-    Say who this is aimed at and what they need to already know. Be specific
-    enough that someone can rule themselves in or out without emailing you.
-  </p>
+  <section aria-labelledby="follow-a-lost-thing">
+    <h2 id="follow-a-lost-thing">Follow a lost thing</h2>
+    <p>
+      Every case moves through the same twelve stages, in the same order.
+      Scroll the shelf to see the whole route a lost thing takes.
+    </p>
+    <ol class="pipeline" aria-label="The office's twelve stages, in order">
+      {
+        weeks.map((week) => (
+          <li>
+            <span class="ticket">
+              <span class="ticket-index" aria-hidden="true">
+                {pad(week.week)}
+              </span>
+              {week.stage}
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section aria-labelledby="before-your-first-shift">
+    <h2 id="before-your-first-shift">Before your first shift</h2>
+    <dl class="ledger">
+      <div class="ledger-row">
+        <dt>The one idea</dt>
+        <dd>
+          Things are not lost. They are unrecorded. Whether a lost thing
+          comes home is a property of the system that catches it — who hands
+          it in, how it is written down, where it is kept, how an owner
+          proves it is theirs, and what happens when nobody comes.
+        </dd>
+      </div>
+      <div class="ledger-row">
+        <dt>The Office</dt>
+        <dd>
+          In week 1 you deposit one ordinary object with the Office. Each
+          week the class builds it one piece further: a hand-in point, an
+          intake form, a tracking policy, shelving, a claim protocol, triage
+          rules, terms and conditions, an audit, a disposal policy, and a
+          match with another tutorial's Office. On Reclaim Day, week 12, you
+          get your object back — through the Office's own procedure, not by
+          rummaging. The class's return rate is reported, not graded.
+        </dd>
+      </div>
+      <div class="ledger-row">
+        <dt>What you deposit</dt>
+        <dd>
+          <ul>
+            <li>Ordinary and replaceable, worth under $20.</li>
+            <li>Not ID, not keys that open anything, not medication, not money.</li>
+            <li>Not anything you need before week 12.</li>
+          </ul>
+        </dd>
+      </div>
+      <div class="ledger-row">
+        <dt>Who it is for</dt>
+        <dd>
+          Second-year, any discipline. No prerequisites: if you have ever
+          handed something in to lost property, or waited for something to
+          turn up, you already know half of what a shift asks of you.
+        </dd>
+      </div>
+    </dl>
+  </section>
 
   <h2>Where to go next</h2>
   <CardGrid columns={2}>

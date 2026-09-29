@@ -5,8 +5,10 @@ import RelatedContent from "astro-course-university/components/RelatedContent.as
 import SpecList from "astro-course-university/components/SpecList.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
+import WeekNavigator from "../../components/WeekNavigator.astro";
 import { formatCourseDate } from "../../lib/dates";
 import { graphCollections, sessionLabels, siteConfig } from "../../site-config";
+import "../../styles/office.css";
 
 export async function getStaticPaths() {
   const sessions = await getPublishedCollection("sessions");
@@ -22,6 +24,7 @@ const { Content } = await render(session);
   description={session.data.description}
   {...siteConfig}
 >
+  <WeekNavigator currentWeek={session.data.week} kind="sessions" />
   <p><strong>{formatCourseDate(session.data.date)}</strong></p>
   <Content />
   <SpecList spec={session.data.spec}>
