@@ -6,8 +6,13 @@ description:
 heroTitle: Assessment
 ---
 
+import AssessmentStrip from "../../components/AssessmentStrip.astro";
 import AssessmentsGrid from "../../components/AssessmentsGrid.astro";
 
-Weights should sum to 100.
+Four pieces of graded work, in the order they fall due. The strip below shows
+each one's share of the total, sized the way a claim ticket would be if the
+Office cut them by weight.
+
+<AssessmentStrip />
 
 <AssessmentsGrid />
