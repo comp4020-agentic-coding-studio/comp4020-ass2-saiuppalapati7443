@@ -66,8 +66,6 @@ export const collections = {
           .string()
           .regex(/^\/decks\/[a-z0-9-]+\/$/)
           .optional(),
-        object: z.string().trim().min(1).optional(),
-        stage: z.string().trim().min(1).optional(),
       })
       .loose(),
   }),
